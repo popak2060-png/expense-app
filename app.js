@@ -425,6 +425,9 @@ function renderMonthlyReport(){
 
     data.forEach(x=>{
 
+        // فقط هزینه‌ها
+        if(x.type !== "expense") return;
+
         let month = x.date.substring(0,7); // 1405/04
 
         if(!months[month])
