@@ -1,4 +1,4 @@
-﻿/* ---------- PAGE NAVIGATION ---------- */
+﻿/* ---------- PAGE NAVIGATION ----------- */
 function showPage(pageId){
 
 document.querySelectorAll(".page").forEach(p=>{
