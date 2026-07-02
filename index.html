@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense App</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/persian-date/dist/persian-date.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/persian-datepicker/dist/js/persian-datepicker.min.js"></script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- NAV -->
+<div class="nav">
+<button onclick="showPage('home')">🏠 ثبت</button>
+<button onclick="showPage('list')">📋 لیست</button>
+<button onclick="showPage('report')">📊 گزارش</button>
+<button onclick="showPage('settings')">⚙️ تنظیمات</button>
+</div>
+
+<!-- PAGE 1 -->
+<div id="home" class="page active">
+
+<h2>ثبت هزینه</h2>
+
+<label>نوع تراکنش</label>
+
+<select id="type">
+    <option value="expense">💸 هزینه</option>
+    <option value="income">💰 درآمد</option>
+</select>
+
+<input id="subject" placeholder="موضوع">
+<input id="amount" type="text" placeholder="مبلغ">
+<input type="text" id="date" placeholder="تاریخ">
+
+<select id="project"></select>
+<select id="source"></select>
+
+<button id="saveBtn">ثبت</button>
+
+</div>
+
+<!-- PAGE 2 -->
+<div id="list" class="page">
+
+<h2>لیست هزینه‌ها</h2>
+<div class="search-box">
+    <input type="text" id="searchText" placeholder="🔍 جستجو...">
+
+    <select id="searchType">
+        <option value="all">همه</option>
+        <option value="subject">موضوع</option>
+        <option value="project">پروژه</option>
+        <option value="source">محل تأمین</option>
+    </select>
+</div>
+
+<div id="listBox"></div>
+
+</div>
+
+<!-- PAGE 3 -->
+<div id="report" class="page">
+
+<h2>گزارش</h2>
+<div class="total-row">
+    <span>💰 درآمد کل</span>
+    <span id="incomeTotal">۰ تومان</span>
+</div>
+
+<div class="total-row">
+    <span>💸 هزینه کل</span>
+    <span id="expenseTotal">۰ تومان</span>
+</div>
+
+<div class="total-row">
+    <span>📊 مانده</span>
+    <span id="balanceTotal">۰ تومان</span>
+</div>
+
+<h3>هزینه ماهانه</h3>
+<div id="monthlyReport"></div>
+<button onclick="exportCSV()">خروجی اکسل</button>
+
+</div>
+
+<!-- PAGE 4 -->
+<div id="settings" class="page">
+
+<h2>تنظیمات</h2>
+
+<h3>پروژه‌ها</h3>
+<div id="projectList"></div>
+<input id="newProject" placeholder="پروژه جدید">
+<button onclick="addProject()">افزودن</button>
+
+<hr>
+
+<h3>محل تأمین</h3>
+<div id="sourceList"></div>
+<input id="newSource" placeholder="محل جدید">
+<button onclick="addSource()">افزودن</button>
+<hr>
+<button onclick="exportBackup()">📤 پشتیبان‌گیری</button>
+<input type="file" id="importFile" accept=".json" style="display:none">
+<button onclick="document.getElementById('importFile').click()">📥 بازیابی</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="app.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+
+</body>
+
+</html>
