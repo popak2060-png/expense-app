@@ -1,4 +1,4 @@
-﻿/* ---------- PAGE NAVIGATION ----------- */
+/* ---------- PAGE NAVIGATION ----------- */
 function showPage(pageId){
 
 document.querySelectorAll(".page").forEach(p=>{
@@ -8,7 +8,11 @@ p.classList.remove("active");
 document.getElementById(pageId).classList.add("active");
 
 if(pageId==="list") renderList();
-if(pageId==="report") calcTotal();
+if(pageId==="report"){
+    calcTotal();
+    renderMonthlyReport();
+    renderBoxBalance();
+}
 if(pageId==="settings") loadSettings();
 if(pageId==="report"){
     calcTotal();
@@ -132,16 +136,12 @@ let icon = x.type === "income" ? "🟢" : "🔴";
 let title = x.type === "income" ? "درآمد" : "هزینه";
 
 html += `
-<div class="card">
+<div class="item ${x.type}">
 
-    <div class="row">
+    <div class="item-header">
 
-        <div class="info">
-            <b>${icon} ${title} | ${x.subject}</b><br>
-            ${x.amount.toLocaleString('fa-IR')} تومان<br>
-            <span>${x.project}</span> |
-            <span>${x.source}</span> |
-            <span>${x.date}</span>
+        <div class="item-title">
+            ${x.type=="expense" ? "💸 هزینه" : "💰 درآمد"} | ${x.subject}
         </div>
 
         <div class="actions">
@@ -149,6 +149,14 @@ html += `
             <button onclick="del(${i})">🗑</button>
         </div>
 
+    </div>
+
+    <div class="item-amount">
+        ${Number(x.amount).toLocaleString('fa-IR')} تومان
+    </div>
+
+    <div class="item-info">
+        ${x.project} | ${x.source} | ${x.date}
     </div>
 
 </div>
@@ -468,13 +476,20 @@ document.getElementById("amount").addEventListener("input", function () {
 });
 
 /* ---------- import/export------- */
-
 function exportBackup(){
 
-    let data = getData();
+    let backup = {
+
+        data: getData(),
+
+        projects: JSON.parse(localStorage.getItem("projects")) || [],
+
+        sources: JSON.parse(localStorage.getItem("sources")) || []
+
+    };
 
     let blob = new Blob(
-        [JSON.stringify(data, null, 2)],
+        [JSON.stringify(backup, null, 2)],
         {type: "application/json"}
     );
 
@@ -486,6 +501,7 @@ function exportBackup(){
     a.click();
 
     URL.revokeObjectURL(url);
+
 }
 
 document.getElementById("importFile").addEventListener("change", function(e){
@@ -500,21 +516,31 @@ document.getElementById("importFile").addEventListener("change", function(e){
 
         try{
 
-            let data = JSON.parse(event.target.result);
+            let backup = JSON.parse(event.target.result);
 
-            if(!Array.isArray(data)){
+            if(!backup.data){
                 alert("فایل معتبر نیست");
                 return;
             }
 
-            setData(data);
+            setData(backup.data);
+
+            if(backup.projects){
+                localStorage.setItem("projects", JSON.stringify(backup.projects));
+            }
+
+            if(backup.sources){
+                localStorage.setItem("sources", JSON.stringify(backup.sources));
+            }
 
             alert("بازیابی انجام شد");
 
-            renderList();
+            location.reload();
 
         }catch(err){
+
             alert("خطا در فایل بکاپ");
+
         }
 
     };
@@ -522,3 +548,48 @@ document.getElementById("importFile").addEventListener("change", function(e){
     reader.readAsText(file);
 
 });
+
+/* ---------- صندوق ها ---------- */
+function renderBoxBalance(){
+
+    let data = getData();
+
+    let boxes = {};
+
+    data.forEach(x=>{
+
+        if(!x.source) return;
+
+        if(!boxes[x.source]){
+            boxes[x.source]=0;
+        }
+
+        if(x.type === "income"){
+            boxes[x.source] += Number(x.amount);
+        }
+
+        if(x.type === "expense"){
+            boxes[x.source] -= Number(x.amount);
+        }
+
+    });
+
+
+    let html="";
+
+
+    Object.keys(boxes).forEach(box=>{
+
+        html += `
+        <div class="total-row">
+            <span>${box}</span>
+            <span>${boxes[box].toLocaleString('fa-IR')} تومان</span>
+        </div>
+        `;
+
+    });
+
+
+    document.getElementById("boxBalance").innerHTML = html;
+
+}
