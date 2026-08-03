@@ -172,3 +172,10 @@ cursor:pointer;
 .item.income{
     background:#e8f7e8;
 }
+
+.app-version{
+    text-align:center;
+    color:#666;
+    font-size:13px;
+    margin:15px 0;
+}
