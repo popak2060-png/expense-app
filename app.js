@@ -593,3 +593,59 @@ function renderBoxBalance(){
     document.getElementById("boxBalance").innerHTML = html;
 
 }
+
+async function checkForUpdate(){
+
+    const message = document.getElementById("updateMessage");
+    const button = document.getElementById("updateBtn");
+
+    message.innerText = "در حال بررسی آپدیت...";
+
+    try{
+
+        if("serviceWorker" in navigator){
+
+            const registration = await navigator.serviceWorker.getRegistration();
+
+            if(!registration){
+
+                message.innerText = "Service Worker پیدا نشد";
+                return;
+
+            }
+
+            await registration.update();
+
+            if(registration.waiting){
+
+                message.innerText = "نسخه جدید آماده است";
+
+                button.innerText = "🔄 بروزرسانی برنامه";
+
+                button.onclick = function(){
+
+                    registration.waiting.postMessage({
+                        type: "SKIP_WAITING"
+                    });
+
+                    window.location.reload();
+
+                };
+
+            }else{
+
+                message.innerText = "✅ برنامه شما به‌روز است";
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        message.innerText = "خطا در بررسی آپدیت";
+
+    }
+
+}
