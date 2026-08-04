@@ -422,7 +422,72 @@ loadDropdowns();
 renderSources();
 
 }
+/* ---------- TRANSFER source---------- */
 
+function changeTransactionType(){
+
+    const type =
+        document.getElementById("type").value;
+
+    const transferFields =
+        document.getElementById("transferFields");
+
+
+    if(type === "transfer"){
+
+        transferFields.style.display = "block";
+
+        loadTransferSources();
+
+    }else{
+
+        transferFields.style.display = "none";
+
+    }
+
+}
+
+
+function loadTransferSources(){
+
+    const fromSource =
+        document.getElementById("fromSource");
+
+    const toSource =
+        document.getElementById("toSource");
+
+
+    const sources =
+        JSON.parse(
+            localStorage.getItem("sources") || "[]"
+        );
+
+
+    fromSource.innerHTML =
+        '<option value="">انتخاب صندوق</option>';
+
+    toSource.innerHTML =
+        '<option value="">انتخاب صندوق</option>';
+
+
+    sources.forEach(source => {
+
+        fromSource.innerHTML += `
+            <option value="${source}">
+                ${source}
+            </option>
+        `;
+
+
+        toSource.innerHTML += `
+            <option value="${source}">
+                ${source}
+            </option>
+        `;
+
+    });
+
+}
 
 /* ---------- month ---------- */
 function renderMonthlyReport(){
@@ -863,6 +928,36 @@ async function autoCheckForUpdate(){
     }
 
 }
+
+/* ---------- transaction type ---------- */
+
+function changeTransactionType(){
+
+    const type =
+        document.getElementById("type").value;
+
+    const transferFields =
+        document.getElementById(
+            "transferFields"
+        );
+
+
+    if(type === "transfer"){
+
+        transferFields.style.display =
+            "block";
+
+        loadTransferSources();
+
+    }else{
+
+        transferFields.style.display =
+            "none";
+
+    }
+
+}
+
 autoCheckForUpdate();
 loadAppVersion();
 
