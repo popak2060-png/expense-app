@@ -597,48 +597,75 @@ function renderBoxBalance(){
 
 /* ---------- app version ---------- */
 
-const CURRENT_VERSION = "1.0.1";
+/* ---------- installed version ---------- */
 
+function getInstalledVersion(){
+
+    return localStorage.getItem(
+        "installedAppVersion"
+    );
+
+}
+
+
+function setInstalledVersion(version){
+
+    localStorage.setItem(
+        "installedAppVersion",
+        version
+    );
+
+}
 
 /* ---------- check for update ---------- */
 
 async function checkForUpdate(){
 
-    const message = document.getElementById("updateMessage");
-    const button = document.getElementById("updateBtn");
+    const message =
+        document.getElementById(
+            "updateMessage"
+        );
 
-    message.innerText = "در حال بررسی آپدیت...";
+    const button =
+        document.getElementById(
+            "updateBtn"
+        );
+
+    message.innerText =
+        "در حال بررسی آپدیت...";
 
     try{
 
-        // جلوگیری از کش شدن version.json
         const response = await fetch(
-            "version.json?time=" + Date.now()
+            "version.json?time=" +
+            Date.now()
         );
 
-        if(!response.ok){
-            throw new Error("version.json not found");
-        }
+        const data =
+            await response.json();
 
-        const data = await response.json();
+        const latestVersion =
+            data.version;
 
-        const latestVersion = data.version;
-
-        console.log("Current Version:", CURRENT_VERSION);
-        console.log("Latest Version:", latestVersion);
+        const installedVersion =
+            getInstalledVersion();
 
 
-        // مقایسه نسخه‌ها
-        if(CURRENT_VERSION !== latestVersion){
+        if(installedVersion !== latestVersion){
 
             message.innerText =
-                "🆕 نسخه جدید " + latestVersion + " موجود است";
+                "🆕 نسخه جدید " +
+                latestVersion +
+                " موجود است";
 
-            button.innerText = "🔄 بروزرسانی برنامه";
+            button.innerText =
+                "🔄 بروزرسانی برنامه";
 
             button.onclick = function(){
 
-                updateApp();
+                updateApp(
+                    latestVersion
+                );
 
             };
 
@@ -651,7 +678,7 @@ async function checkForUpdate(){
 
     }catch(error){
 
-        console.error("Update Error:", error);
+        console.error(error);
 
         message.innerText =
             "خطا در بررسی آپدیت";
@@ -661,31 +688,40 @@ async function checkForUpdate(){
 }
 
 /* ---------- update app ---------- */
-async function updateApp(){
+async function updateApp(latestVersion){
 
-    const message = document.getElementById("updateMessage");
+    const message =
+        document.getElementById(
+            "updateMessage"
+        );
 
     message.innerText =
         "در حال بروزرسانی برنامه...";
 
     try{
 
-        // پاک کردن تمام Cache های برنامه
-        const cacheNames = await caches.keys();
+        // پاک کردن Cache
+        const cacheNames =
+            await caches.keys();
 
         await Promise.all(
 
-            cacheNames.map(cacheName =>
-                caches.delete(cacheName)
+            cacheNames.map(
+                cacheName =>
+                caches.delete(
+                    cacheName
+                )
             )
 
         );
 
-        // درخواست دریافت نسخه جدید Service Worker
+
+        // بروزرسانی Service Worker
         if("serviceWorker" in navigator){
 
             const registration =
-                await navigator.serviceWorker.getRegistration();
+                await navigator.serviceWorker
+                .getRegistration();
 
             if(registration){
 
@@ -695,19 +731,27 @@ async function updateApp(){
 
         }
 
-        message.innerText =
-            "بروزرسانی انجام شد";
 
-        // کمی صبر برای نمایش پیام
+        // ذخیره نسخه جدید
+        setInstalledVersion(
+            latestVersion
+        );
+
+
+        message.innerText =
+            "✅ بروزرسانی انجام شد";
+
+
         setTimeout(() => {
 
             window.location.reload();
 
         }, 500);
 
+
     }catch(error){
 
-        console.error("Update Error:", error);
+        console.error(error);
 
         message.innerText =
             "خطا در بروزرسانی برنامه";
@@ -723,8 +767,6 @@ async function loadAppVersion(){
     const versionElement =
         document.getElementById("appVersion");
 
-    if(!versionElement) return;
-
     try{
 
         const response = await fetch(
@@ -733,7 +775,31 @@ async function loadAppVersion(){
 
         const data = await response.json();
 
-        versionElement.innerText = data.version;
+        const latestVersion = data.version;
+
+        // نسخه نصب‌شده فعلی
+        let installedVersion =
+            getInstalledVersion();
+
+        // اگر اولین اجرای برنامه است
+        if(!installedVersion){
+
+            setInstalledVersion(
+                latestVersion
+            );
+
+            installedVersion =
+                latestVersion;
+
+        }
+
+        // نمایش نسخه نصب‌شده
+        if(versionElement){
+
+            versionElement.innerText =
+                installedVersion;
+
+        }
 
     }catch(error){
 
