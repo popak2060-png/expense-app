@@ -594,6 +594,14 @@ function renderBoxBalance(){
 
 }
 
+
+/* ---------- app version ---------- */
+
+const CURRENT_VERSION = "1.0.0";
+
+
+/* ---------- check for update ---------- */
+
 async function checkForUpdate(){
 
     const message = document.getElementById("updateMessage");
@@ -603,48 +611,110 @@ async function checkForUpdate(){
 
     try{
 
-        if("serviceWorker" in navigator){
+        // جلوگیری از کش شدن version.json
+        const response = await fetch(
+            "version.json?time=" + Date.now()
+        );
 
-            const registration = await navigator.serviceWorker.getRegistration();
+        if(!response.ok){
+            throw new Error("version.json not found");
+        }
 
-            if(!registration){
+        const data = await response.json();
 
-                message.innerText = "Service Worker پیدا نشد";
-                return;
+        const latestVersion = data.version;
 
-            }
+        console.log("Current Version:", CURRENT_VERSION);
+        console.log("Latest Version:", latestVersion);
 
-            await registration.update();
 
-            if(registration.waiting){
+        // مقایسه نسخه‌ها
+        if(CURRENT_VERSION !== latestVersion){
 
-                message.innerText = "نسخه جدید آماده است";
+            message.innerText =
+                "🆕 نسخه جدید " + latestVersion + " موجود است";
 
-                button.innerText = "🔄 بروزرسانی برنامه";
+            button.innerText = "🔄 بروزرسانی برنامه";
 
-                button.onclick = function(){
+            button.onclick = function(){
 
-                    registration.waiting.postMessage({
-                        type: "SKIP_WAITING"
-                    });
+                updateApp();
 
-                    window.location.reload();
+            };
 
-                };
+        }else{
 
-            }else{
-
-                message.innerText = "✅ برنامه شما به‌روز است";
-
-            }
+            message.innerText =
+                "✅ برنامه شما به‌روز است";
 
         }
 
     }catch(error){
 
-        console.error(error);
+        console.error("Update Error:", error);
 
-        message.innerText = "خطا در بررسی آپدیت";
+        message.innerText =
+            "خطا در بررسی آپدیت";
+
+    }
+
+}
+
+/* ---------- update app ---------- */
+
+async function updateApp(){
+
+    const message = document.getElementById("updateMessage");
+
+    message.innerText =
+        "در حال بروزرسانی برنامه...";
+
+    try{
+
+        if("serviceWorker" in navigator){
+
+            const registration =
+                await navigator.serviceWorker.getRegistration();
+
+            if(registration){
+
+                // دریافت Service Worker جدید
+                await registration.update();
+
+                if(registration.waiting){
+
+                    registration.waiting.postMessage({
+                        type: "SKIP_WAITING"
+                    });
+
+                    // منتظر فعال شدن نسخه جدید
+                    navigator.serviceWorker.addEventListener(
+                        "controllerchange",
+                        function(){
+
+                            window.location.reload();
+
+                        },
+                        {once:true}
+                    );
+
+                    return;
+
+                }
+
+            }
+
+        }
+
+        // اگر Service Worker جدید هنوز waiting نبود
+        window.location.reload();
+
+    }catch(error){
+
+        console.error("Update Error:", error);
+
+        message.innerText =
+            "خطا در بروزرسانی برنامه";
 
     }
 
