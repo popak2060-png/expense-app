@@ -665,74 +665,49 @@ async function updateApp(){
 
     const message = document.getElementById("updateMessage");
 
-    message.innerText = "در حال دریافت نسخه جدید...";
+    message.innerText =
+        "در حال بروزرسانی برنامه...";
 
     try{
 
-        const registration =
-            await navigator.serviceWorker.getRegistration();
+        // پاک کردن تمام Cache های برنامه
+        const cacheNames = await caches.keys();
 
-        if(!registration){
+        await Promise.all(
 
-            message.innerText = "Service Worker فعال نیست";
-            return;
+            cacheNames.map(cacheName =>
+                caches.delete(cacheName)
+            )
 
-        }
+        );
 
-        // درخواست بررسی نسخه جدید
-        await registration.update();
+        // درخواست دریافت نسخه جدید Service Worker
+        if("serviceWorker" in navigator){
 
-        // اگر نسخه جدید نصب شده و منتظر فعال شدن است
-        if(registration.waiting){
+            const registration =
+                await navigator.serviceWorker.getRegistration();
 
-            message.innerText =
-                "نسخه جدید دریافت شد. در حال بروزرسانی...";
+            if(registration){
 
-            registration.waiting.postMessage({
-                type: "SKIP_WAITING"
-            });
+                await registration.update();
 
-            navigator.serviceWorker.addEventListener(
-                "controllerchange",
-                function(){
-
-                    window.location.reload(true);
-
-                },
-                {once:true}
-            );
-
-            return;
-
-        }
-
-        // اگر Service Worker جدید در حال نصب است
-        if(registration.installing){
-
-            const newWorker = registration.installing;
-
-            newWorker.addEventListener("statechange", function(){
-
-                if(newWorker.state === "installed"){
-
-                    newWorker.postMessage({
-                        type: "SKIP_WAITING"
-                    });
-
-                }
-
-            });
-
-            return;
+            }
 
         }
 
         message.innerText =
-            "نسخه جدید هنوز توسط Service Worker دریافت نشده است";
+            "بروزرسانی انجام شد";
+
+        // کمی صبر برای نمایش پیام
+        setTimeout(() => {
+
+            window.location.reload();
+
+        }, 500);
 
     }catch(error){
 
-        console.error(error);
+        console.error("Update Error:", error);
 
         message.innerText =
             "خطا در بروزرسانی برنامه";
