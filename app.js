@@ -715,3 +715,34 @@ async function updateApp(){
     }
 
 }
+
+/* ---------- load app version ---------- */
+
+async function loadAppVersion(){
+
+    const versionElement =
+        document.getElementById("appVersion");
+
+    if(!versionElement) return;
+
+    try{
+
+        const response = await fetch(
+            "version.json?time=" + Date.now()
+        );
+
+        const data = await response.json();
+
+        versionElement.innerText = data.version;
+
+    }catch(error){
+
+        console.error(
+            "Version Load Error:",
+            error
+        );
+
+    }
+
+}
+loadAppVersion();
