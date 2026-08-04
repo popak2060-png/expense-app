@@ -37,15 +37,18 @@
     <option value="transfer">🔄 جابجایی بین صندوق‌ها</option>
 </select>
     
+<div id="normalTransactionFields">
+ 
 <input id="subject" placeholder="موضوع">
 <input id="amount" type="text" placeholder="مبلغ">
-<input type="text" id="date" placeholder="تاریخ">
-
 <select id="project"></select>
 <select id="source"></select>
     
+</div>
+   
+<input type="text" id="date" placeholder="تاریخ">
+    
 <div id="transferFields" style="display:none;">
-
     <label>از صندوق</label>
     <select id="fromSource">
         <option value="">انتخاب صندوق</option>
@@ -54,7 +57,6 @@
     <select id="toSource">
         <option value="">انتخاب صندوق</option>
     </select>
-
 </div>
     
 <button id="saveBtn">ثبت</button>
