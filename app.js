@@ -888,5 +888,6 @@ async function autoCheckForUpdate(){
     }
 
 }
-loadAppVersion();
 autoCheckForUpdate();
+loadAppVersion();
+
