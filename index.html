@@ -31,11 +31,12 @@
 
 <label>نوع تراکنش</label>
 
-<select id="type">
+<select id="type" onchange="changeTransactionType()">
     <option value="expense">💸 هزینه</option>
     <option value="income">💰 درآمد</option>
+    <option value="transfer">🔄 جابجایی بین صندوق‌ها</option>
 </select>
-
+    
 <input id="subject" placeholder="موضوع">
 <input id="amount" type="text" placeholder="مبلغ">
 <input type="text" id="date" placeholder="تاریخ">
