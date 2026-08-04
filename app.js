@@ -691,16 +691,14 @@ async function checkForUpdate(){
 async function updateApp(latestVersion){
 
     const message =
-        document.getElementById(
-            "updateMessage"
-        );
+        document.getElementById("updateMessage");
 
     message.innerText =
         "در حال بروزرسانی برنامه...";
 
     try{
 
-        // پاک کردن Cache
+        // پاک کردن Cache های قبلی
         const cacheNames =
             await caches.keys();
 
@@ -708,9 +706,7 @@ async function updateApp(latestVersion){
 
             cacheNames.map(
                 cacheName =>
-                caches.delete(
-                    cacheName
-                )
+                caches.delete(cacheName)
             )
 
         );
@@ -732,26 +728,37 @@ async function updateApp(latestVersion){
         }
 
 
-        // ذخیره نسخه جدید
-        setInstalledVersion(
-            latestVersion
-        );
+        // ثبت نسخه جدید
+        if(latestVersion){
+
+            setInstalledVersion(
+                latestVersion
+            );
+
+        }
 
 
         message.innerText =
             "✅ بروزرسانی انجام شد";
 
 
+        // Reload با جلوگیری از Cache
         setTimeout(() => {
 
-            window.location.reload();
+            window.location.href =
+                window.location.pathname +
+                "?update=" +
+                Date.now();
 
         }, 500);
 
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Update Error:",
+            error
+        );
 
         message.innerText =
             "خطا در بروزرسانی برنامه";
@@ -759,7 +766,6 @@ async function updateApp(latestVersion){
     }
 
 }
-
 /* ---------- load app version ---------- */
 
 async function loadAppVersion(){
