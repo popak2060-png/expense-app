@@ -666,52 +666,76 @@ async function updateApp(){
 
     const message = document.getElementById("updateMessage");
 
-    message.innerText =
-        "در حال بروزرسانی برنامه...";
+    message.innerText = "در حال بروزرسانی برنامه...";
 
     try{
 
-        if("serviceWorker" in navigator){
+        const registration =
+            await navigator.serviceWorker.getRegistration();
 
-            const registration =
-                await navigator.serviceWorker.getRegistration();
+        if(!registration){
 
-            if(registration){
-
-                // دریافت Service Worker جدید
-                await registration.update();
-
-                if(registration.waiting){
-
-                    registration.waiting.postMessage({
-                        type: "SKIP_WAITING"
-                    });
-
-                    // منتظر فعال شدن نسخه جدید
-                    navigator.serviceWorker.addEventListener(
-                        "controllerchange",
-                        function(){
-
-                            window.location.reload();
-
-                        },
-                        {once:true}
-                    );
-
-                    return;
-
-                }
-
-            }
+            message.innerText = "Service Worker فعال نیست";
+            return;
 
         }
 
-        // اگر Service Worker جدید هنوز waiting نبود
-        window.location.reload();
+        // درخواست دریافت نسخه جدید
+        await registration.update();
+
+        // اگر نسخه جدید در حال نصب است
+        if(registration.installing){
+
+            const newWorker = registration.installing;
+
+            newWorker.addEventListener("statechange", function(){
+
+                if(newWorker.state === "installed"){
+
+                    if(navigator.serviceWorker.controller){
+
+                        newWorker.postMessage({
+                            type: "SKIP_WAITING"
+                        });
+
+                    }
+
+                }
+
+            });
+
+        }
+
+        // اگر نسخه جدید آماده انتظار است
+        else if(registration.waiting){
+
+            registration.waiting.postMessage({
+                type: "SKIP_WAITING"
+            });
+
+        }
+
+        else{
+
+            message.innerText =
+                "نسخه جدید هنوز دریافت نشده است";
+
+        }
+
+        // وقتی Service Worker جدید کنترل را گرفت
+        navigator.serviceWorker.addEventListener(
+            "controllerchange",
+            function(){
+
+                window.location.reload();
+
+            },
+            {once:true}
+        );
 
     }catch(error){
 
-        console.error("Update Error:", error);
+        console.error(error);
 
         message.innerText =
             "خطا در بروزرسانی برنامه";
