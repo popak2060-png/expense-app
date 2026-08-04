@@ -10,7 +10,8 @@ const FILES_TO_CACHE = [
 ];
 
 
-/* نصب نسخه جدید */
+/* ---------- نصب ---------- */
+
 self.addEventListener("install", event => {
 
     event.waitUntil(
@@ -23,10 +24,13 @@ self.addEventListener("install", event => {
 
     );
 
+    self.skipWaiting();
+
 });
 
 
-/* فعال کردن نسخه جدید */
+/* ---------- فعال شدن ---------- */
+
 self.addEventListener("activate", event => {
 
     event.waitUntil(
@@ -52,7 +56,8 @@ self.addEventListener("activate", event => {
 });
 
 
-/* دریافت پیام بروزرسانی */
+/* ---------- پیام بروزرسانی ---------- */
+
 self.addEventListener("message", event => {
 
     if(event.data && event.data.type === "SKIP_WAITING"){
@@ -64,38 +69,49 @@ self.addEventListener("message", event => {
 });
 
 
-/* مدیریت درخواست فایل‌ها */
+/* ---------- دریافت فایل ---------- */
+
 self.addEventListener("fetch", event => {
 
-    event.respondWith(
+    const url = new URL(event.request.url);
 
-        fetch(event.request)
-            .then(response => {
+    // فایل‌های اصلی برنامه همیشه از شبکه دریافت شوند
+    if(
+        url.pathname.endsWith("/app.js") ||
+        url.pathname.endsWith("/index.html") ||
+        url.pathname.endsWith("/style.css") ||
+        url.pathname.endsWith("/version.json")
+    ){
 
-                if(
-                    response &&
-                    response.status === 200 &&
-                    response.type === "basic"
-                ){
+        event.respondWith(
 
-                    const clone = response.clone();
-
-                    caches.open(CACHE_NAME).then(cache => {
-
-                        cache.put(event.request, clone);
-
-                    });
-
-                }
+            fetch(event.request, {
+                cache: "no-store"
+            }).then(response => {
 
                 return response;
 
-            })
-            .catch(() => {
+            }).catch(() => {
 
                 return caches.match(event.request);
 
             })
+
+        );
+
+        return;
+
+    }
+
+
+    // سایر فایل‌ها
+    event.respondWith(
+
+        caches.match(event.request).then(response => {
+
+            return response || fetch(event.request);
+
+        })
 
     );
 
