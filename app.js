@@ -745,4 +745,82 @@ async function loadAppVersion(){
     }
 
 }
+/* ---------- auto update check ---------- */
+
+async function autoCheckForUpdate(){
+
+    try{
+
+        const response = await fetch(
+            "version.json?time=" + Date.now()
+        );
+
+        if(!response.ok) return;
+
+        const data = await response.json();
+
+        const latestVersion = data.version;
+
+        const versionElement =
+            document.getElementById("appVersion");
+
+        // نمایش نسخه فعلی
+        if(versionElement){
+
+            versionElement.innerText =
+                latestVersion;
+
+        }
+
+        // نسخه فعلی که برنامه اجرا می‌کند
+        const currentVersion =
+            typeof CURRENT_VERSION !== "undefined"
+                ? CURRENT_VERSION
+                : latestVersion;
+
+
+        // اگر نسخه جدید وجود داشت
+        if(currentVersion !== latestVersion){
+
+            const message =
+                document.getElementById("updateMessage");
+
+            const button =
+                document.getElementById("updateBtn");
+
+            if(message){
+
+                message.innerText =
+                    "🆕 نسخه جدید " +
+                    latestVersion +
+                    " موجود است";
+
+            }
+
+            if(button){
+
+                button.innerText =
+                    "🔄 بروزرسانی برنامه";
+
+                button.onclick = function(){
+
+                    updateApp();
+
+                };
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Auto Update Check Error:",
+            error
+        );
+
+    }
+
+}
 loadAppVersion();
+autoCheckForUpdate();
