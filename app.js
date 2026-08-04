@@ -930,11 +930,15 @@ async function autoCheckForUpdate(){
 }
 
 /* ---------- transaction type ---------- */
-
 function changeTransactionType(){
 
     const type =
         document.getElementById("type").value;
+
+    const normalFields =
+        document.getElementById(
+            "normalTransactionFields"
+        );
 
     const transferFields =
         document.getElementById(
@@ -944,6 +948,11 @@ function changeTransactionType(){
 
     if(type === "transfer"){
 
+        // مخفی کردن فرم درآمد و هزینه
+        normalFields.style.display =
+            "none";
+
+        // نمایش فرم جابجایی
         transferFields.style.display =
             "block";
 
@@ -951,6 +960,11 @@ function changeTransactionType(){
 
     }else{
 
+        // نمایش فرم درآمد و هزینه
+        normalFields.style.display =
+            "block";
+
+        // مخفی کردن فرم جابجایی
         transferFields.style.display =
             "none";
 
