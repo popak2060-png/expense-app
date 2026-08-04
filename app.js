@@ -827,54 +827,23 @@ async function autoCheckForUpdate(){
 
         const latestVersion = data.version;
 
-        const versionElement =
-            document.getElementById("appVersion");
-
-        // نمایش نسخه فعلی
-        if(versionElement){
-
-            versionElement.innerText =
-                latestVersion;
-
-        }
-
-        // نسخه فعلی که برنامه اجرا می‌کند
-        const currentVersion =
-            typeof CURRENT_VERSION !== "undefined"
-                ? CURRENT_VERSION
-                : latestVersion;
+        const installedVersion =
+            getInstalledVersion();
 
 
-        // اگر نسخه جدید وجود داشت
-        if(currentVersion !== latestVersion){
+        // اگر نسخه جدید وجود دارد
+        if(
+            installedVersion &&
+            installedVersion !== latestVersion
+        ){
 
-            const message =
-                document.getElementById("updateMessage");
-
-            const button =
-                document.getElementById("updateBtn");
-
-            if(message){
-
-                message.innerText =
-                    "🆕 نسخه جدید " +
-                    latestVersion +
-                    " موجود است";
-
-            }
-
-            if(button){
-
-                button.innerText =
-                    "🔄 بروزرسانی برنامه";
-
-                button.onclick = function(){
-
-                    updateApp();
-
-                };
-
-            }
+            alert(
+                "🆕 نسخه جدید برنامه موجود است\n\n" +
+                "نسخه جدید: " +
+                latestVersion +
+                "\n\n" +
+                "برای بروزرسانی به بخش تنظیمات بروید."
+            );
 
         }
 
