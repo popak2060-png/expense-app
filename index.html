@@ -49,15 +49,22 @@
    
 <input type="text" id="date" placeholder="تاریخ">
 <input id="amount" type="text" placeholder="مبلغ">
+    
 <div id="transferFields" style="display:none;">
     <label>از صندوق</label>
+    
     <select id="fromSource">
-        <option value="">انتخاب صندوق</option>
-    </select>
-    <label>به صندوق</label>
-    <select id="toSource">
-        <option value="">انتخاب صندوق</option>
-    </select>
+    <option value="" selected disabled hidden>
+        انتخاب صندوق
+    </option>
+</select>
+
+<select id="toSource">
+    <option value="" selected disabled hidden>
+        انتخاب صندوق
+    </option>
+</select>
+    
 </div>
     
 <button id="saveBtn">ثبت</button>
