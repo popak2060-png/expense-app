@@ -57,28 +57,139 @@ function setData(data){
 localStorage.setItem("expenses",JSON.stringify(data));
 }
 
-/* ---------- SAVE ---------- */
+ /* ---------- SAVE ---------- */
 function saveExpense(){
 
-let data = getData();
+    let data = getData();
 
-data.push({
-type: type.value,
-subject: subject.value,
-amount: Number(amount.value.replace(/,/g, "")),
-date: date.value,
-project: project.value,
-source: source.value
-});
+    let transactionType = type.value;
 
-setData(data);
+    let value =
+        Number(amount.value.replace(/,/g, ""));
 
-subject.value="";
-amount.value="";
 
-alert("ثبت شد");
+    /* ---------- TRANSFER ---------- */
 
-renderList();
+    if(transactionType === "transfer"){
+
+        let from = fromSource.value;
+        let to = toSource.value;
+
+
+        // بررسی مبلغ
+        if(!value || value <= 0){
+
+            alert("مبلغ را وارد کنید");
+            return;
+
+        }
+
+
+        // بررسی صندوق مبدأ
+        if(!from){
+
+            alert("صندوق مبدأ را انتخاب کنید");
+            return;
+
+        }
+
+
+        // بررسی صندوق مقصد
+        if(!to){
+
+            alert("صندوق مقصد را انتخاب کنید");
+            return;
+
+        }
+
+
+        // جلوگیری از انتخاب یک صندوق برای هر دو
+        if(from === to){
+
+            alert(
+                "صندوق مبدأ و مقصد نمی‌توانند یکسان باشند"
+            );
+
+            return;
+
+        }
+
+
+        // ثبت جابجایی
+
+        data.push({
+
+            type: "transfer",
+
+            subject: "جابجایی بین صندوق‌ها",
+
+            amount: value,
+
+            date: date.value,
+
+            project: "",
+
+            source: "",
+
+            fromSource: from,
+
+            toSource: to
+
+        });
+
+
+        setData(data);
+
+
+        // پاک کردن فرم
+
+        amount.value = "";
+
+        fromSource.value = "";
+
+        toSource.value = "";
+
+
+        alert("جابجایی با موفقیت ثبت شد");
+
+        renderList();
+
+        return;
+
+    }
+
+
+    /* ---------- EXPENSE / INCOME ---------- */
+
+    data.push({
+
+        type: transactionType,
+
+        subject: subject.value,
+
+        amount: value,
+
+        date: date.value,
+
+        project: project.value,
+
+        source: source.value
+
+    });
+
+
+    setData(data);
+
+
+    subject.value = "";
+
+    amount.value = "";
+
+
+    alert("ثبت شد");
+
+    renderList();
+
 }
 
 /* ---------- LIST ---------- */
