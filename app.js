@@ -661,7 +661,72 @@ function renderBoxBalance(){
 
 
 /* ---------- app version ---------- */
+async function updateApp(){
 
+    const message =
+        document.getElementById("updateMessage");
+
+    message.innerText =
+        "در حال بروزرسانی برنامه...";
+
+    try{
+
+        // پاک کردن تمام Cache ها
+        const cacheNames =
+            await caches.keys();
+
+        await Promise.all(
+            cacheNames.map(
+                cacheName =>
+                    caches.delete(cacheName)
+            )
+        );
+
+
+        // درخواست بروزرسانی Service Worker
+        if("serviceWorker" in navigator){
+
+            const registration =
+                await navigator.serviceWorker
+                .getRegistration();
+
+            if(registration){
+
+                await registration.update();
+
+            }
+
+        }
+
+
+        message.innerText =
+            "✅ بروزرسانی انجام شد";
+
+
+        // بارگذاری مجدد برنامه
+        setTimeout(() => {
+
+            window.location.href =
+                window.location.pathname +
+                "?update=" +
+                Date.now();
+
+        }, 500);
+
+
+    }catch(error){
+
+        console.error(
+            "Update Error:",
+            error
+        );
+
+        message.innerText =
+            "❌ خطا در بروزرسانی برنامه";
+
+    }
+
+}
 /* ---------- installed version ---------- */
 
 function getInstalledVersion(){
@@ -684,73 +749,6 @@ function setInstalledVersion(version){
 
 /* ---------- check for update ---------- */
 
-async function checkForUpdate(){
-
-    const message =
-        document.getElementById(
-            "updateMessage"
-        );
-
-    const button =
-        document.getElementById(
-            "updateBtn"
-        );
-
-    message.innerText =
-        "در حال بررسی آپدیت...";
-
-    try{
-
-        const response = await fetch(
-            "version.json?time=" +
-            Date.now()
-        );
-
-        const data =
-            await response.json();
-
-        const latestVersion =
-            data.version;
-
-        const installedVersion =
-            getInstalledVersion();
-
-
-        if(installedVersion !== latestVersion){
-
-            message.innerText =
-                "🆕 نسخه جدید " +
-                latestVersion +
-                " موجود است";
-
-            button.innerText =
-                "🔄 بروزرسانی برنامه";
-
-            button.onclick = function(){
-
-                updateApp(
-                    latestVersion
-                );
-
-            };
-
-        }else{
-
-            message.innerText =
-                "✅ برنامه شما به‌روز است";
-
-        }
-
-    }catch(error){
-
-        console.error(error);
-
-        message.innerText =
-            "خطا در بررسی آپدیت";
-
-    }
-
-}
 
 /* ---------- update app ---------- */
 async function updateApp(latestVersion){
