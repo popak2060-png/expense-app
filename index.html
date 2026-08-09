@@ -25,9 +25,10 @@
 </div>
 
 <!-- PAGE 1 -->
+<!-- PAGE 1 -->
 <div id="home" class="page active">
 
-<h2>ثبت هزینه ااها</h2>
+<h2>ثبت هزینه</h2>
 
 <label>نوع تراکنش</label>
 
@@ -38,24 +39,26 @@
 </select>
 
 
+<!-- فیلدهای مشترک -->
+<input
+    type="text"
+    id="date"
+    placeholder="تاریخ"
+>
+
+<input
+    id="amount"
+    type="text"
+    placeholder="مبلغ"
+>
+
+
 <!-- فرم هزینه و درآمد -->
 <div id="normalTransactionFields">
 
     <input
-        type="text"
-        id="date"
-        placeholder="تاریخ"
-    >
-
-    <input
         id="subject"
         placeholder="موضوع"
-    >
-
-    <input
-        id="amount"
-        type="text"
-        placeholder="مبلغ"
     >
 
     <select id="project"></select>
@@ -64,6 +67,8 @@
 
 </div>
 
+
+<!-- فرم جابجایی -->
 <div id="transferFields" style="display:none;">
 
     <label>از صندوق</label>
@@ -74,6 +79,7 @@
         </option>
     </select>
 
+
     <label>به صندوق</label>
 
     <select id="toSource">
@@ -83,6 +89,12 @@
     </select>
 
 </div>
+
+
+<button id="saveBtn">ثبت</button>
+
+</div>
+    
 
 
 
