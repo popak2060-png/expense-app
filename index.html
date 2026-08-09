@@ -37,36 +37,69 @@
     <option value="transfer">🔄 جابجایی بین صندوق‌ها</option>
 </select>
 
- 
 
-   
-<input type="text" id="date" placeholder="تاریخ">
-<input id="amount" type="text" placeholder="مبلغ">
-    
-<div id="transferFields" style="display:none;">
-    <label>از صندوق</label>
-    
-    <select id="fromSource">
-    <option value="" selected disabled hidden>
-        انتخاب صندوق
-    </option>
-</select>
-
-<select id="toSource">
-    <option value="" selected disabled hidden>
-        انتخاب صندوق
-    </option>
-</select>
-    
-</div>
-    
+<!-- فرم هزینه و درآمد -->
 <div id="normalTransactionFields">
- 
-<input id="subject" placeholder="موضوع">
-<select id="project"></select>
-<select id="source"></select>
-    
+
+    <input
+        type="text"
+        id="date"
+        placeholder="تاریخ"
+    >
+
+    <input
+        id="subject"
+        placeholder="موضوع"
+    >
+
+    <input
+        id="amount"
+        type="text"
+        placeholder="مبلغ"
+    >
+
+    <select id="project"></select>
+
+    <select id="source"></select>
+
 </div>
+
+
+<!-- فرم جابجایی -->
+<div id="transferFields" style="display:none;">
+
+    <input
+        type="text"
+        id="transferDate"
+        placeholder="تاریخ"
+    >
+
+    <input
+        id="transferAmount"
+        type="text"
+        placeholder="مبلغ"
+    >
+
+    <label>از صندوق</label>
+
+    <select id="fromSource">
+        <option value="" selected disabled hidden>
+            انتخاب صندوق
+        </option>
+    </select>
+
+
+    <label>به صندوق</label>
+
+    <select id="toSource">
+        <option value="" selected disabled hidden>
+            انتخاب صندوق
+        </option>
+    </select>
+
+</div>
+
+
 <button id="saveBtn">ثبت</button>
 
 </div>
