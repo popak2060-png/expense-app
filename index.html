@@ -24,7 +24,7 @@
 <button onclick="showPage('settings')">⚙️ تنظیمات</button>
 </div>
 
-<!-- PAGE 1 -->
+
 <!-- PAGE 1 -->
 <div id="home" class="page active">
 
@@ -96,16 +96,26 @@
 </div>
     
 
-
-
-<button id="saveBtn">ثبت</button>
-
-</div>
-
 <!-- PAGE 2 -->
 <div id="list" class="page">
 
 <h2>لیست هزینه‌ها</h2>
+<div class="list-filters">
+
+    <button onclick="filterList('expense')">
+        💸 هزینه
+    </button>
+
+    <button onclick="filterList('income')">
+        💰 درآمد
+    </button>
+
+    <button onclick="filterList('transfer')">
+        🔄 جابجایی
+    </button>
+	<button onclick="filterList('all')">📋 همه</button>
+
+</div>
 <div class="search-box">
     <input type="text" id="searchText" placeholder="🔍 جستجو...">
 
