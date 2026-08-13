@@ -165,14 +165,17 @@ cursor:pointer;
     font-size:14px;
 }
 
-.item.expense{
-    background:#f4f2ce;
+.expense-item{
+    background:#f8d7da;
 }
 
-.item.income{
-    background:#e8f7e8;
+.income-item{
+    background:#d4edda;
 }
 
+.transfer-item{
+    background:#dbeafe;
+}
 .app-version{
     text-align:center;
     color:#666;
