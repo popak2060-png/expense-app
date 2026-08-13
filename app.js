@@ -191,93 +191,213 @@ function saveExpense(){
     renderList();
 
 }
+/*--------فیلتر لیست---*/
+let currentListFilter = "all";
+function filterList(type){
 
+    currentListFilter = type;
+
+    renderList();
+
+}
 /* ---------- LIST ---------- */
 function renderList(){
 
-let data = getData();
+    let data = getData();
+	
+  /* ---------- FILTER ---------- */
 
-data = data.map(x => ({
-    type: x.type || "expense",
-    ...x
-}));
+	
+	if(currentListFilter !== "all"){
 
-let keyword = document.getElementById("searchText").value.toLowerCase().trim();
-let type = document.getElementById("searchType").value;
-
-if(keyword !== ""){
-
-    data = data.filter(x=>{
-
-
-        if(type === "subject")
-            return x.subject.toLowerCase().includes(keyword);
-
-        if(type === "project")
-            return x.project.toLowerCase().includes(keyword);
-
-        if(type === "source")
-            return x.source.toLowerCase().includes(keyword);
-
-        // همه
-        return (
-            x.subject.toLowerCase().includes(keyword) ||
-            x.project.toLowerCase().includes(keyword) ||
-            x.source.toLowerCase().includes(keyword)
-        );
-
-    })
-
-if(data.length === 0){
-    document.getElementById("listBox").innerHTML = `
-        <div style="text-align:center;padding:20px;color:#888">
-            هیچ موردی یافت نشد 😕
-        </div>
-    `;
-    return;
-};
+    data = data.filter(x =>
+        (x.type || "expense") === currentListFilter
+    );
 
 }
 
-let html="";
+    data = data.map(x => ({
+        type: x.type || "expense",
+        subject: x.subject || "",
+        project: x.project || "",
+        source: x.source || "",
+        fromSource: x.fromSource || "",
+        toSource: x.toSource || "",
+        ...x
+    }));
 
-data.forEach((x,i)=>{
 
-let icon = x.type === "income" ? "🟢" : "🔴";
-let title = x.type === "income" ? "درآمد" : "هزینه";
+    let keyword =
+        document.getElementById("searchText")
+        .value
+        .toLowerCase()
+        .trim();
 
-html += `
-<div class="item ${x.type}">
+    let type =
+        document.getElementById("searchType").value;
 
-    <div class="item-header">
 
-        <div class="item-title">
-            ${x.type=="expense" ? "💸 هزینه" : "💰 درآمد"} | ${x.subject}
-        </div>
 
-        <div class="actions">
-            <button onclick="edit(${i})">✏️</button>
-            <button onclick="del(${i})">🗑</button>
-        </div>
+    /* ---------- SEARCH ---------- */
 
-    </div>
+    if(keyword !== ""){
 
-    <div class="item-amount">
-        ${Number(x.amount).toLocaleString('fa-IR')} تومان
-    </div>
+        data = data.filter(x => {
 
-    <div class="item-info">
-        ${x.project} | ${x.source} | ${x.date}
-    </div>
+            if(type === "subject")
+                return x.subject
+                    .toLowerCase()
+                    .includes(keyword);
 
-</div>
-`;
 
-});
+            if(type === "project")
+                return x.project
+                    .toLowerCase()
+                    .includes(keyword);
 
-document.getElementById("listBox").innerHTML=html;
+
+            if(type === "source")
+                return (
+                    x.source
+                        .toLowerCase()
+                        .includes(keyword)
+
+                    ||
+
+                    x.fromSource
+                        .toLowerCase()
+                        .includes(keyword)
+
+                    ||
+
+                    x.toSource
+                        .toLowerCase()
+                        .includes(keyword)
+                );
+
+
+            // همه
+            return (
+                x.subject.toLowerCase().includes(keyword) ||
+                x.project.toLowerCase().includes(keyword) ||
+                x.source.toLowerCase().includes(keyword) ||
+                x.fromSource.toLowerCase().includes(keyword) ||
+                x.toSource.toLowerCase().includes(keyword)
+            );
+
+        });
+
+
+        if(data.length === 0){
+
+            document.getElementById("listBox").innerHTML = `
+                <div style="text-align:center;padding:20px;color:#888">
+                    هیچ موردی یافت نشد 😕
+                </div>
+            `;
+
+            return;
+
+        }
+
+    }
+
+
+    /* ---------- CARDS ---------- */
+
+    let html = "";
+
+
+    data.forEach((x,i) => {
+
+
+        /* ---------- TRANSFER ---------- */
+
+        if(x.type === "transfer"){
+
+            html += `
+            <div class="item transfer-item">
+
+                <div class="item-header">
+
+                    <div class="item-title">
+                        🔄 جابجایی صندوق
+                    </div>
+
+                    <div class="actions">
+                        <button onclick="edit(${i})">✏️</button>
+                        <button onclick="del(${i})">🗑</button>
+                    </div>
+
+                </div>
+
+                <div class="item-amount">
+                    ${Number(x.amount).toLocaleString('fa-IR')} تومان
+                </div>
+
+                <div class="item-info">
+                    ${x.fromSource} ← ${x.toSource} | ${x.date}
+                </div>
+
+            </div>
+            `;
+
+        }
+
+
+        /* ---------- EXPENSE / INCOME ---------- */
+
+        else{
+
+            let cardClass =
+                x.type === "income"
+                ? "income-item"
+                : "expense-item";
+
+
+            html += `
+            <div class="item ${cardClass}">
+
+                <div class="item-header">
+
+                    <div class="item-title">
+                        ${
+                            x.type === "expense"
+                            ? "💸 هزینه"
+                            : "💰 درآمد"
+                        }
+                        | ${x.subject}
+                    </div>
+
+                    <div class="actions">
+                        <button onclick="edit(${i})">✏️</button>
+                        <button onclick="del(${i})">🗑</button>
+                    </div>
+
+                </div>
+
+                <div class="item-amount">
+                    ${Number(x.amount).toLocaleString('fa-IR')} تومان
+                </div>
+
+                <div class="item-info">
+                    ${x.project} | ${x.source} | ${x.date}
+                </div>
+
+            </div>
+            `;
+
+        }
+
+    });
+
+
+    document.getElementById("listBox").innerHTML = html;
 
 }
+
+
+
 
 /* ---------- DELETE ---------- */
 function del(i){
@@ -305,7 +425,6 @@ source.value=x.source;
 del(i);
 
 }
-
 /* ---------- TOTAL ---------- */
 function calcTotal(){
 
@@ -316,26 +435,36 @@ function calcTotal(){
 
     data.forEach(x=>{
 
-        if((x.type || "expense") === "income")
+        if(x.type === "income"){
+
             income += Number(x.amount);
 
-        else
+        }
+
+        if(x.type === "expense"){
+
             expense += Number(x.amount);
 
+        }
+
+        // transfer عمداً در درآمد و هزینه محاسبه نمی‌شود
+
     });
+
 
     document.getElementById("incomeTotal").innerText =
         income.toLocaleString('fa-IR') + " تومان";
 
+
     document.getElementById("expenseTotal").innerText =
         expense.toLocaleString('fa-IR') + " تومان";
 
+
     document.getElementById("balanceTotal").innerText =
-        (income-expense).toLocaleString('fa-IR') + " تومان";
+        (income - expense).toLocaleString('fa-IR') + " تومان";
 
 }
-
-/* ---------- EXPORT CSV ---------- */
+/* ---------- خروجی اکسل ---------- */
 function exportCSV(){
 
     let data = getData();
@@ -348,7 +477,29 @@ function exportCSV(){
         ["موضوع","مبلغ","تاریخ","پروژه","محل تامین"]
     ];
 
+    let transfers = [
+        ["مبلغ","تاریخ","صندوق مبدا","صندوق مقصد"]
+    ];
+
+
     data.forEach(x=>{
+
+        /* ---------- جابجایی ---------- */
+
+        if(x.type === "transfer"){
+
+            transfers.push([
+                x.amount,
+                x.date,
+                x.fromSource,
+                x.toSource
+            ]);
+
+            return;
+        }
+
+
+        /* ---------- درآمد / هزینه ---------- */
 
         let row = [
             x.subject,
@@ -358,22 +509,56 @@ function exportCSV(){
             x.source
         ];
 
-        if((x.type || "expense") === "income")
+
+        if((x.type || "expense") === "income"){
+
             incomes.push(row);
-        else
+
+        }else{
+
             expenses.push(row);
+
+        }
 
     });
 
+
     const wb = XLSX.utils.book_new();
 
-    const wsExpense = XLSX.utils.aoa_to_sheet(expenses);
-    const wsIncome = XLSX.utils.aoa_to_sheet(incomes);
 
-    XLSX.utils.book_append_sheet(wb, wsExpense, "هزینه ها");
-    XLSX.utils.book_append_sheet(wb, wsIncome, "درآمدها");
+    const wsExpense =
+        XLSX.utils.aoa_to_sheet(expenses);
 
-    XLSX.writeFile(wb, "Finance.xlsx");
+    const wsIncome =
+        XLSX.utils.aoa_to_sheet(incomes);
+
+    const wsTransfer =
+        XLSX.utils.aoa_to_sheet(transfers);
+
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        wsExpense,
+        "هزینه ها"
+    );
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        wsIncome,
+        "درآمدها"
+    );
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        wsTransfer,
+        "جابجایی"
+    );
+
+
+    XLSX.writeFile(
+        wb,
+        "Finance.xlsx"
+    );
 
 }
 
@@ -381,11 +566,11 @@ function exportCSV(){
 function initSettings(){
 
 if(!localStorage.getItem("projects")){
-localStorage.setItem("projects",JSON.stringify(["خانواده","سایت","کار"]));
+localStorage.setItem("projects",JSON.stringify(["پیش فرض"]));
 }
 
 if(!localStorage.getItem("sources")){
-localStorage.setItem("sources",JSON.stringify(["سامان","مهر","راضیه","نقد"]));
+localStorage.setItem("sources",JSON.stringify(["پیش فرض"]));
 }
 
 loadDropdowns();
@@ -533,7 +718,7 @@ loadDropdowns();
 renderSources();
 
 }
-/* ---------- TRANSFER source---------- */
+/* ---------- کد جایجایی صندوق در فرم ثبت---------- */
 
 function changeTransactionType(){
 
@@ -725,41 +910,89 @@ document.getElementById("importFile").addEventListener("change", function(e){
 
 });
 
-/* ---------- صندوق ها ---------- */
+/* ---------- محاسبات صندوق ها ---------- */
 function renderBoxBalance(){
 
     let data = getData();
 
     let boxes = {};
 
-    data.forEach(x=>{
+    data.forEach(x => {
 
-        if(!x.source) return;
-
-        if(!boxes[x.source]){
-            boxes[x.source]=0;
-        }
+        /* ---------- درآمد ---------- */
 
         if(x.type === "income"){
+
+            if(!x.source) return;
+
+            if(!boxes[x.source]){
+                boxes[x.source] = 0;
+            }
+
             boxes[x.source] += Number(x.amount);
         }
 
+
+        /* ---------- هزینه ---------- */
+
         if(x.type === "expense"){
+
+            if(!x.source) return;
+
+            if(!boxes[x.source]){
+                boxes[x.source] = 0;
+            }
+
             boxes[x.source] -= Number(x.amount);
+        }
+
+
+        /* ---------- جابجایی ---------- */
+
+        if(x.type === "transfer"){
+
+            let from = x.fromSource;
+            let to = x.toSource;
+            let amount = Number(x.amount);
+
+
+            // صندوق مبدأ
+            if(from){
+
+                if(!boxes[from]){
+                    boxes[from] = 0;
+                }
+
+                boxes[from] -= amount;
+            }
+
+
+            // صندوق مقصد
+            if(to){
+
+                if(!boxes[to]){
+                    boxes[to] = 0;
+                }
+
+                boxes[to] += amount;
+            }
+
         }
 
     });
 
 
-    let html="";
+    let html = "";
 
 
-    Object.keys(boxes).forEach(box=>{
+    Object.keys(boxes).forEach(box => {
 
         html += `
         <div class="total-row">
             <span>${box}</span>
-            <span>${boxes[box].toLocaleString('fa-IR')} تومان</span>
+            <span>
+                ${boxes[box].toLocaleString('fa-IR')} تومان
+            </span>
         </div>
         `;
 
@@ -1038,7 +1271,7 @@ async function autoCheckForUpdate(){
 
 }
 
-/* ---------- transaction type ---------- */
+/* ---------- فرم جابجایی صندوق و مخفی سازی هزینه/درامد ---------- */
 function changeTransactionType(){
 
     const type =
@@ -1080,6 +1313,8 @@ function changeTransactionType(){
     }
 
 }
+
+
 
 autoCheckForUpdate();
 loadAppVersion();
