@@ -204,6 +204,25 @@ function filterList(type){
 function renderList(){
 
     let data = getData();
+
+/* ---------- SORT BY DATE ---------- */
+
+function dateToNumber(date){
+
+    if(!date) return 0;
+
+    let d = date
+        .replace(/[۰-۹]/g, function(c){
+            return "۰۱۲۳۴۵۶۷۸۹".indexOf(c);
+        })
+        .replace(/\//g, "");
+
+    return Number(d);
+}
+
+data.sort((a, b) => {
+    return dateToNumber(b.date) - dateToNumber(a.date);
+});
 	
   /* ---------- FILTER ---------- */
 
