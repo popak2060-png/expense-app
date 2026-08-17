@@ -727,24 +727,166 @@ renderSources();
 
 function renderSources(){
 
-let arr = JSON.parse(localStorage.getItem("sources") || "[]");
+    let arr = JSON.parse(
+        localStorage.getItem("sources") || "[]"
+    );
 
-let html = "";
+    let html = "";
 
-arr.forEach((s,i)=>{
-html += `
-<div class="row">
-    <span>${s}</span>
-    <div class="actions">
-        <button onclick="deleteSource(${i})">🗑</button>
-    </div>
-</div>
-`;
-});
+    arr.forEach((s, i) => {
 
-document.getElementById("sourceList").innerHTML = html;
+        html += `
+        <div class="row" id="sourceRow-${i}">
+
+            <span id="sourceText-${i}">
+                ${s}
+            </span>
+
+            <div class="actions">
+
+                <button onclick="editSource(${i})">
+                    ✏️
+                </button>
+
+                <button onclick="deleteSource(${i})">
+                    🗑
+                </button>
+
+            </div>
+
+        </div>
+        `;
+
+    });
+
+    document.getElementById("sourceList").innerHTML = html;
+}
+
+function editSource(i){
+
+    let arr = JSON.parse(
+        localStorage.getItem("sources") || "[]"
+    );
+
+    let oldName = arr[i];
+
+    let row = document.getElementById(
+        "sourceRow-" + i
+    );
+
+    row.innerHTML = `
+
+        <input
+            type="text"
+            id="editSourceInput-${i}"
+            value="${oldName}"
+        >
+
+        <div class="actions">
+
+            <button onclick="saveSourceEdit(${i})">
+                ✔️
+            </button>
+
+            <button onclick="renderSources()">
+                ❌
+            </button>
+
+        </div>
+
+    `;
+
+    document
+        .getElementById(`editSourceInput-${i}`)
+        .focus();
+}
+
+function saveSourceEdit(i){
+
+    let arr = JSON.parse(
+        localStorage.getItem("sources") || "[]"
+    );
+
+    let oldName = arr[i];
+
+    let input = document.getElementById(
+        `editSourceInput-${i}`
+    );
+
+    let newName = input.value.trim();
+
+    if(newName === ""){
+
+        alert("نام صندوق نمی‌تواند خالی باشد");
+        return;
+
+    }
+
+    // جلوگیری از نام تکراری
+    if(
+        arr.some((x, index) =>
+            index !== i && x === newName
+        )
+    ){
+
+        alert("این نام صندوق قبلاً وجود دارد");
+        return;
+
+    }
+
+
+    /* ---------- تغییر نام صندوق ---------- */
+
+    arr[i] = newName;
+
+    localStorage.setItem(
+        "sources",
+        JSON.stringify(arr)
+    );
+
+
+    /* ---------- اصلاح تمام تراکنش‌ها ---------- */
+
+    let data = getData();
+
+    data.forEach(x => {
+
+        // درآمد / هزینه
+        if(x.source === oldName){
+
+            x.source = newName;
+
+        }
+
+        // جابجایی - صندوق مبدأ
+        if(x.fromSource === oldName){
+
+            x.fromSource = newName;
+
+        }
+
+        // جابجایی - صندوق مقصد
+        if(x.toSource === oldName){
+
+            x.toSource = newName;
+
+        }
+
+    });
+
+
+    setData(data);
+
+
+    /* ---------- بروزرسانی ---------- */
+
+    loadDropdowns();
+    renderSources();
+    renderList();
+    renderBoxBalance();
 
 }
+
 
 function deleteSource(i){
 
