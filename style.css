@@ -182,3 +182,178 @@ cursor:pointer;
     font-size:13px;
     margin:15px 0;
 }
+
+/* =========================
+   فرم ثبت - طراحی جدید
+   ========================= */
+
+#home h2{
+    font-size:20px;
+    margin:8px 0 20px;
+    color:#263238;
+}
+
+
+/* عنوان نوع تراکنش */
+
+#home > label{
+    display:block;
+    font-size:13px;
+    color:#666;
+    margin-bottom:6px;
+}
+
+
+/* تمام فیلدهای فرم */
+
+#home input,
+#home select{
+    width:100%;
+    height:46px;
+    box-sizing:border-box;
+
+    padding:0 13px;
+    margin:0 0 12px;
+
+    border:1px solid #d9dfe3;
+    border-radius:10px;
+
+    background:#fff;
+    color:#333;
+
+    font-family:tahoma;
+    font-size:14px;
+
+    outline:none;
+
+    transition:
+        border-color .2s,
+        box-shadow .2s;
+}
+
+
+/* حالت انتخاب / فوکوس */
+
+#home input:focus,
+#home select:focus{
+
+    border-color:#78909c;
+
+    box-shadow:
+        0 0 0 3px rgba(120,144,156,.12);
+}
+
+
+/* Placeholder */
+
+#home input::placeholder{
+    color:#999;
+}
+
+
+/* بخش جابجایی */
+
+#transferFields{
+
+    background:#eef5ff;
+
+    padding:14px;
+
+    margin-top:5px;
+    margin-bottom:10px;
+
+    border-radius:12px;
+
+    border:1px solid #d8e6f8;
+}
+
+
+/* عنوان‌های داخل جابجایی */
+
+#transferFields label{
+
+    display:block;
+
+    font-size:13px;
+    color:#526477;
+
+    margin:3px 0 6px;
+}
+
+
+/* دکمه ثبت */
+
+#saveBtn{
+
+    width:100%;
+
+    height:48px;
+
+    margin-top:8px;
+
+    border:none;
+    border-radius:11px;
+
+    background:#2c3e50;
+    color:white;
+
+    font-family:tahoma;
+    font-size:15px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 3px 8px rgba(44,62,80,.18);
+
+    transition:
+        transform .1s,
+        opacity .2s;
+}
+
+
+#saveBtn:active{
+
+    transform:scale(.98);
+    opacity:.9;
+
+}
+
+
+/* نوع تراکنش */
+
+#type{
+
+    background:#fff;
+
+    font-weight:bold;
+
+    margin-bottom:18px;
+}
+
+
+/* موبایل */
+
+@media (max-width:600px){
+
+    #home{
+        padding:14px;
+    }
+
+    #home h2{
+        margin-top:5px;
+        margin-bottom:18px;
+    }
+
+    #home input,
+    #home select{
+        height:47px;
+        font-size:14px;
+    }
+
+    #saveBtn{
+        height:50px;
+        font-size:15px;
+    }
+
+}
