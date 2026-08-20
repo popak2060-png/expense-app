@@ -357,3 +357,16 @@ cursor:pointer;
     }
 
 }
+
+/* پروژه و محل تامین کنار هم */
+
+#normalTransactionFields .form-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:0;
+}
+
+#normalTransactionFields .form-row select{
+    flex:1;
+    min-width:0;
+}
