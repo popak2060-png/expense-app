@@ -415,6 +415,58 @@ data.sort((a, b) => {
 
 }
 
+function edit(i){
+
+    let data = getData();
+    let x = data[i];
+
+    if(!x) return;
+
+    // ذخیره اندیس رکورد در حال ویرایش
+    editingIndex = i;
+
+
+    // انتخاب نوع تراکنش
+    type.value = x.type || "expense";
+
+    changeTransactionType();
+
+
+    // تاریخ
+    date.value = x.date || "";
+
+    // مبلغ
+    amount.value = x.amount || "";
+
+
+    /* ---------- هزینه / درآمد ---------- */
+
+    if(x.type !== "transfer"){
+
+        subject.value = x.subject || "";
+
+        project.value = x.project || "";
+
+        source.value = x.source || "";
+
+    }
+
+
+    /* ---------- جابجایی ---------- */
+
+    else{
+
+        fromSource.value = x.fromSource || "";
+
+        toSource.value = x.toSource || "";
+
+    }
+
+
+    // رفتن به صفحه ثبت
+    showPage("home");
+
+}
 
 
 
@@ -429,21 +481,7 @@ renderList();
 
 }
 
-/* ---------- EDIT ---------- */
-function edit(i){
 
-let data = getData();
-let x = data[i];
-
-subject.value=x.subject;
-amount.value=x.amount;
-date.value=x.date;
-project.value=x.project;
-source.value=x.source;
-
-del(i);
-
-}
 /* ---------- TOTAL ---------- */
 function calcTotal(){
 
