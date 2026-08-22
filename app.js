@@ -57,7 +57,8 @@ function setData(data){
 localStorage.setItem("expenses",JSON.stringify(data));
 }
 
- /* ---------- SAVE ---------- */
+/* ---------- SAVE ---------- */
+
 function saveExpense(){
 
     let data = getData();
@@ -76,7 +77,6 @@ function saveExpense(){
         let to = toSource.value;
 
 
-        // بررسی مبلغ
         if(!value || value <= 0){
 
             alert("مبلغ را وارد کنید");
@@ -85,7 +85,6 @@ function saveExpense(){
         }
 
 
-        // بررسی صندوق مبدأ
         if(!from){
 
             alert("صندوق مبدأ را انتخاب کنید");
@@ -94,7 +93,6 @@ function saveExpense(){
         }
 
 
-        // بررسی صندوق مقصد
         if(!to){
 
             alert("صندوق مقصد را انتخاب کنید");
@@ -103,7 +101,6 @@ function saveExpense(){
         }
 
 
-        // جلوگیری از انتخاب یک صندوق برای هر دو
         if(from === to){
 
             alert(
@@ -115,9 +112,7 @@ function saveExpense(){
         }
 
 
-        // ثبت جابجایی
-
-        data.push({
+        let transferData = {
 
             type: "transfer",
 
@@ -135,18 +130,33 @@ function saveExpense(){
 
             toSource: to
 
-        });
+        };
+
+
+        /* ---------- ویرایش ---------- */
+
+        if(editingIndex !== null){
+
+            data[editingIndex] = transferData;
+
+        }
+
+        /* ---------- ثبت جدید ---------- */
+
+        else{
+
+            data.push(transferData);
+
+        }
 
 
         setData(data);
 
+        editingIndex = null;
 
-        // پاک کردن فرم
 
         amount.value = "";
-
         fromSource.value = "";
-
         toSource.value = "";
 
 
@@ -158,6 +168,57 @@ function saveExpense(){
 
     }
 
+
+    /* ---------- EXPENSE / INCOME ---------- */
+
+    let transactionData = {
+
+        type: transactionType,
+
+        subject: subject.value,
+
+        amount: value,
+
+        date: date.value,
+
+        project: project.value,
+
+        source: source.value
+
+    };
+
+
+    /* ---------- ویرایش ---------- */
+
+    if(editingIndex !== null){
+
+        data[editingIndex] = transactionData;
+
+    }
+
+    /* ---------- ثبت جدید ---------- */
+
+    else{
+
+        data.push(transactionData);
+
+    }
+
+
+    setData(data);
+
+    editingIndex = null;
+
+
+    subject.value = "";
+    amount.value = "";
+
+
+    alert("ثبت شد");
+
+    renderList();
+
+}
 
     /* ---------- EXPENSE / INCOME ---------- */
 
