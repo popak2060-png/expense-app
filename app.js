@@ -58,6 +58,8 @@ localStorage.setItem("expenses",JSON.stringify(data));
 }
 
  /* ---------- SAVE ---------- */
+
+
 function saveExpense(){
 
     let data = getData();
@@ -76,7 +78,6 @@ function saveExpense(){
         let to = toSource.value;
 
 
-        // بررسی مبلغ
         if(!value || value <= 0){
 
             alert("مبلغ را وارد کنید");
@@ -85,7 +86,6 @@ function saveExpense(){
         }
 
 
-        // بررسی صندوق مبدأ
         if(!from){
 
             alert("صندوق مبدأ را انتخاب کنید");
@@ -94,7 +94,6 @@ function saveExpense(){
         }
 
 
-        // بررسی صندوق مقصد
         if(!to){
 
             alert("صندوق مقصد را انتخاب کنید");
@@ -103,7 +102,6 @@ function saveExpense(){
         }
 
 
-        // جلوگیری از انتخاب یک صندوق برای هر دو
         if(from === to){
 
             alert(
@@ -115,9 +113,7 @@ function saveExpense(){
         }
 
 
-        // ثبت جابجایی
-
-        data.push({
+        let transferData = {
 
             type: "transfer",
 
@@ -135,18 +131,33 @@ function saveExpense(){
 
             toSource: to
 
-        });
+        };
+
+
+        /* ---------- ویرایش ---------- */
+
+        if(editingIndex !== null){
+
+            data[editingIndex] = transferData;
+
+        }
+
+        /* ---------- ثبت جدید ---------- */
+
+        else{
+
+            data.push(transferData);
+
+        }
 
 
         setData(data);
 
+        editingIndex = null;
 
-        // پاک کردن فرم
 
         amount.value = "";
-
         fromSource.value = "";
-
         toSource.value = "";
 
 
@@ -161,7 +172,7 @@ function saveExpense(){
 
     /* ---------- EXPENSE / INCOME ---------- */
 
-    data.push({
+    let transactionData = {
 
         type: transactionType,
 
@@ -175,14 +186,32 @@ function saveExpense(){
 
         source: source.value
 
-    });
+    };
+
+
+    /* ---------- ویرایش ---------- */
+
+    if(editingIndex !== null){
+
+        data[editingIndex] = transactionData;
+
+    }
+
+    /* ---------- ثبت جدید ---------- */
+
+    else{
+
+        data.push(transactionData);
+
+    }
 
 
     setData(data);
 
+    editingIndex = null;
+
 
     subject.value = "";
-
     amount.value = "";
 
 
@@ -191,6 +220,8 @@ function saveExpense(){
     renderList();
 
 }
+
+
 /*--------فیلتر لیست---*/
 let currentListFilter = "all";
 function filterList(type){
@@ -203,7 +234,10 @@ function filterList(type){
 /* ---------- LIST ---------- */
 function renderList(){
 
-    let data = getData();
+let data = getData().map((x, index) => ({
+    ...x,
+    originalIndex: index
+}));
 
 /* ---------- SORT BY DATE ---------- */
 
@@ -344,8 +378,8 @@ data.sort((a, b) => {
                     </div>
 
                     <div class="actions">
-                        <button onclick="edit(${i})">✏️</button>
-                        <button onclick="del(${i})">🗑</button>
+                       <button onclick="edit(${x.originalIndex})">✏️</button>
+                       <button onclick="del(${x.originalIndex})">🗑</button>
                     </div>
 
                 </div>
@@ -389,8 +423,8 @@ data.sort((a, b) => {
                     </div>
 
                     <div class="actions">
-                        <button onclick="edit(${i})">✏️</button>
-                        <button onclick="del(${i})">🗑</button>
+                       <button onclick="edit(${x.originalIndex})">✏️</button>
+                       <button onclick="del(${x.originalIndex})">🗑</button>
                     </div>
 
                 </div>
@@ -430,18 +464,57 @@ renderList();
 }
 
 /* ---------- EDIT ---------- */
+let editingIndex = null;
 function edit(i){
 
-let data = getData();
-let x = data[i];
+    let data = getData();
+    let x = data[i];
 
-subject.value=x.subject;
-amount.value=x.amount;
-date.value=x.date;
-project.value=x.project;
-source.value=x.source;
+    if(!x) return;
 
-del(i);
+    // ذخیره اندیس رکورد در حال ویرایش
+    editingIndex = i;
+
+
+    // انتخاب نوع تراکنش
+    type.value = x.type || "expense";
+
+    changeTransactionType();
+
+
+    // تاریخ
+    date.value = x.date || "";
+
+    // مبلغ
+    amount.value = x.amount || "";
+
+
+    /* ---------- هزینه / درآمد ---------- */
+
+    if(x.type !== "transfer"){
+
+        subject.value = x.subject || "";
+
+        project.value = x.project || "";
+
+        source.value = x.source || "";
+
+    }
+
+
+    /* ---------- جابجایی ---------- */
+
+    else{
+
+        fromSource.value = x.fromSource || "";
+
+        toSource.value = x.toSource || "";
+
+    }
+
+
+    // رفتن به صفحه ثبت
+    showPage("home");
 
 }
 /* ---------- TOTAL ---------- */
