@@ -973,6 +973,252 @@ loadDropdowns();
 renderSources();
 
 }
+/* ---------- CATEGORIES ---------- */
+
+function getCategories(){
+
+    return JSON.parse(
+        localStorage.getItem("categories") || "[]"
+    );
+
+}
+
+
+function saveCategories(data){
+
+    localStorage.setItem(
+        "categories",
+        JSON.stringify(data)
+    );
+
+}
+
+
+/* ---------- ADD CATEGORY ---------- */
+
+function addCategory(){
+
+    let input = document.getElementById("newCategory");
+
+    let name = input.value.trim();
+
+    if(name === "") return;
+
+    let categories = getCategories();
+
+    // جلوگیری از دسته تکراری
+    if(
+        categories.some(
+            x => x.name === name
+        )
+    ){
+
+        alert("این دسته قبلاً وجود دارد");
+        return;
+
+    }
+
+    categories.push({
+
+        name: name,
+
+        keywords: []
+
+    });
+
+    saveCategories(categories);
+
+    input.value = "";
+
+    renderCategories();
+
+}
+
+
+/* ---------- RENDER CATEGORIES ---------- */
+
+function renderCategories(){
+
+    let categories = getCategories();
+
+    let html = "";
+
+    categories.forEach((category, index) => {
+
+        html += `
+
+        <div class="category-box">
+
+            <div class="category-header">
+
+                <strong>
+                    ${category.name}
+                </strong>
+
+                <button
+                    onclick="deleteCategory(${index})"
+                >
+                    🗑
+                </button>
+
+            </div>
+
+
+            <div class="keyword-area">
+
+                <div
+                    class="keyword-tags"
+                    id="keywordTags-${index}"
+                >
+
+                    ${renderKeywords(
+                        category.keywords,
+                        index
+                    )}
+
+                </div>
+
+
+                <input
+                    type="text"
+                    class="keyword-input"
+                    placeholder="کلمه کلیدی را وارد کنید و Enter بزنید"
+                    onkeydown="addKeyword(event, ${index})"
+                >
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+
+    document.getElementById(
+        "categoryList"
+    ).innerHTML = html;
+
+}
+
+
+/* ---------- KEYWORDS ---------- */
+
+function renderKeywords(keywords, categoryIndex){
+
+    return keywords.map(
+        (keyword, keywordIndex) => {
+
+            return `
+
+            <span class="keyword-tag">
+
+                ${keyword}
+
+                <button
+                    onclick="deleteKeyword(
+                        ${categoryIndex},
+                        ${keywordIndex}
+                    )"
+                >
+                    ×
+                </button>
+
+            </span>
+
+            `;
+
+        }
+    ).join("");
+
+}
+
+
+/* ---------- ADD KEYWORD ---------- */
+
+function addKeyword(event, categoryIndex){
+
+    if(event.key !== "Enter") return;
+
+    event.preventDefault();
+
+    let input = event.target;
+
+    let keyword = input.value.trim();
+
+    if(keyword === "") return;
+
+    let categories = getCategories();
+
+    let keywords =
+        categories[categoryIndex].keywords;
+
+
+    // جلوگیری از کلمه تکراری
+    if(keywords.includes(keyword)){
+
+        input.value = "";
+
+        return;
+
+    }
+
+
+    keywords.push(keyword);
+
+    saveCategories(categories);
+
+    input.value = "";
+
+    renderCategories();
+
+}
+
+
+/* ---------- DELETE KEYWORD ---------- */
+
+function deleteKeyword(
+    categoryIndex,
+    keywordIndex
+){
+
+    let categories = getCategories();
+
+    categories[categoryIndex]
+        .keywords
+        .splice(keywordIndex, 1);
+
+    saveCategories(categories);
+
+    renderCategories();
+
+}
+
+
+/* ---------- DELETE CATEGORY ---------- */
+
+function deleteCategory(index){
+
+    let categories = getCategories();
+
+    if(
+        !confirm(
+            "این دسته و کلمات کلیدی آن حذف شود؟"
+        )
+    ){
+
+        return;
+
+    }
+
+    categories.splice(index, 1);
+
+    saveCategories(categories);
+
+    renderCategories();
+
+}
+
 /* ---------- کد جایجایی صندوق در فرم ثبت---------- */
 
 function changeTransactionType(){
