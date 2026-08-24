@@ -370,3 +370,80 @@ cursor:pointer;
     flex:1;
     min-width:0;
 }
+
+/* ---------- CATEGORY ---------- */
+
+.category-box{
+    background:#fff;
+    border:1px solid #b8c4d0;
+    border-radius:10px;
+    padding:12px;
+    margin:10px 0;
+}
+
+.category-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.category-header button{
+    width:auto;
+    border:none;
+    background:#f8d7da;
+    border-radius:7px;
+    padding:6px 10px;
+}
+
+.keyword-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:8px;
+}
+
+.keyword-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    background:#e8eef5;
+    border:1px solid #b8c4d0;
+    border-radius:15px;
+    padding:5px 9px;
+    font-size:13px;
+}
+
+.keyword-tag button{
+    width:auto;
+    padding:0;
+    margin:0;
+    border:none;
+    background:none;
+    color:#777;
+    font-size:16px;
+    line-height:1;
+}
+
+.keyword-input{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid #9aaabd;
+    border-radius:7px;
+    padding:9px;
+    outline:none;
+}
+
+.keyword-input:focus{
+    border-color:#526b84;
+}
+
+.category-add{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.category-add input{
+    flex:1;
+}
