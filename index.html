@@ -154,7 +154,13 @@
 <h3>💼 موجودی صندوق‌ها</h3>
 <div id="boxBalance"></div>
 
-<h3>💸 هزینه ماهانه</h3>
+<h3>هزینه/درآمد ماهانه براساس موضوع</h3>
+
+<select id="monthlyProjectFilter"
+        onchange="renderMonthlyReport()">
+    <option value="all">کل</option>
+</select>
+
 <div id="monthlyReport"></div>
 
 <h3>📂 هزینه بر اساس دسته‌بندی</h3>
