@@ -1095,6 +1095,7 @@ function renderCategories(){
                     type="text"
                     class="keyword-input"
                     placeholder="کلمه کلیدی را وارد کنید و Enter بزنید"
+					enterkeyhint="enter"
                     onkeydown="addKeyword(event, ${index})"
                 >
 
