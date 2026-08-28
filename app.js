@@ -1,24 +1,41 @@
-﻿/* ---------- PAGE NAVIGATION ----------- */
+/* ---------- PAGE NAVIGATION ----------- */
+
 function showPage(pageId){
 
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active");
-});
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.remove("active");
+    });
 
-document.getElementById(pageId).classList.add("active");
+    document.getElementById(pageId).classList.add("active");
 
-if(pageId==="list") renderList();
-if(pageId==="report"){
-    calcTotal();
-    renderMonthlyReport();
-    renderBoxBalance();
-      renderCategoryReport();
-}
-if(pageId==="settings") loadSettings();
-if(pageId==="report"){
-    calcTotal();
-    renderMonthlyReport();
-}
+
+    if(pageId === "list"){
+
+        renderList();
+
+    }
+
+
+    if(pageId === "report"){
+
+        calcTotal();
+
+        loadMonthlyProjectFilter();
+
+        renderMonthlyReport();
+
+        renderBoxBalance();
+
+        renderCategoryReport();
+
+    }
+
+
+    if(pageId === "settings"){
+
+        loadSettings();
+
+    }
 
 }
 
@@ -1510,43 +1527,223 @@ function loadTransferSources(){
 
 }
 
-/* ---------- month ---------- */
+/* ---------- MONTHLY INCOME / EXPENSE BY PROJECT ---------- */
+
 function renderMonthlyReport(){
 
     let data = getData();
 
+    let selectedProject =
+        document.getElementById("monthlyProjectFilter").value;
+
+
+    /* ---------- FILTER PROJECT ---------- */
+
+    if(selectedProject !== "all"){
+
+        data = data.filter(x =>
+            (x.type === "income" || x.type === "expense") &&
+            x.project === selectedProject
+        );
+
+    }else{
+
+        data = data.filter(x =>
+            x.type === "income" ||
+            x.type === "expense"
+        );
+
+    }
+
+
+    /* ---------- GROUP BY MONTH ---------- */
+
     let months = {};
 
-    data.forEach(x=>{
 
-        // فقط هزینه‌ها
-        if(x.type !== "expense") return;
+    data.forEach(x => {
 
-        let month = x.date.substring(0,7); // 1405/04
+        if(!x.date) return;
 
-        if(!months[month])
-            months[month]=0;
 
-        months[month]+=Number(x.amount);
+        let parts = x.date.split("/");
+
+        if(parts.length !== 3) return;
+
+
+        let month =
+            parts[0] + "/" +
+            String(parts[1]).padStart(2,"0");
+
+
+        if(!months[month]){
+
+            months[month] = {
+                income: 0,
+                expense: 0
+            };
+
+        }
+
+
+        let amount = Number(x.amount) || 0;
+
+
+        if(x.type === "income"){
+
+            months[month].income += amount;
+
+        }
+
+
+        if(x.type === "expense"){
+
+            months[month].expense += amount;
+
+        }
 
     });
 
-    let html="";
 
-    Object.keys(months).sort().forEach(m=>{
+    /* ---------- SORT MONTHS ---------- */
+
+    let sortedMonths =
+        Object.keys(months).sort((a,b) => {
+
+            let aa = a.split("/");
+            let bb = b.split("/");
+
+            return (
+                Number(bb[0]) * 100 +
+                Number(bb[1])
+            ) -
+            (
+                Number(aa[0]) * 100 +
+                Number(aa[1])
+            );
+
+        });
+
+
+    /* ---------- RENDER ---------- */
+
+    let html = "";
+
+
+    sortedMonths.forEach(month => {
 
         html += `
-        <div class="total-row">
-            <span>${m}</span>
-            <span>${months[m].toLocaleString('fa-IR')} تومان</span>
+
+        <div class="monthly-row">
+
+            <span class="monthly-date">
+                ${month}
+            </span>
+
+            <span class="monthly-income">
+                ${months[month].income
+                    .toLocaleString('fa-IR')}
+            </span>
+
+            <span class="monthly-expense">
+                ${months[month].expense
+                    .toLocaleString('fa-IR')}
+            </span>
+
         </div>
+
         `;
 
     });
 
-    document.getElementById("monthlyReport").innerHTML=html;
+
+    if(html === ""){
+
+        html = `
+            <div style="
+                text-align:center;
+                padding:15px;
+                color:#888;
+            ">
+                اطلاعاتی برای نمایش وجود ندارد
+            </div>
+        `;
+
+    }
+
+
+    document.getElementById(
+        "monthlyReport"
+    ).innerHTML = html;
 
 }
+
+
+/* ---------- MONTHLY PROJECT DROPDOWN ---------- */
+
+function loadMonthlyProjectFilter(){
+
+    let data = getData();
+
+    let projects = [];
+
+    data.forEach(x => {
+
+        if(
+            (x.type === "income" || x.type === "expense") &&
+            x.project &&
+            !projects.includes(x.project)
+        ){
+
+            projects.push(x.project);
+
+        }
+
+    });
+
+
+    projects.sort();
+
+
+    let select =
+        document.getElementById(
+            "monthlyProjectFilter"
+        );
+
+
+    let currentValue = select.value;
+
+
+    select.innerHTML = `
+        <option value="all">کل</option>
+    `;
+
+
+    projects.forEach(project => {
+
+        select.innerHTML += `
+            <option value="${project}">
+                ${project}
+            </option>
+        `;
+
+    });
+
+
+    // حفظ انتخاب قبلی
+    if(projects.includes(currentValue)){
+
+        select.value = currentValue;
+
+    }else{
+
+        select.value = "all";
+
+    }
+
+}
+
+
 
 /* ---------- mablagh be mmomayez------- */
 document.getElementById("amount").addEventListener("input", function () {
