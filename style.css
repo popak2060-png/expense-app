@@ -1,9 +1,15 @@
+@font-face {
+    font-family: "IRANSans";
+    src: url("./libs/IRANSans.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+}
+
 body{
-font-family:tahoma;
+font-family:"IRANSans", Tahoma, sans-serif;
 margin:0;
 background:#f5f5f5;
 }
-
 .nav{
     position: fixed;
     top:0;
