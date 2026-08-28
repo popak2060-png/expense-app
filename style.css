@@ -1,4 +1,4 @@
-﻿body{
+body{
 font-family:tahoma;
 margin:0;
 background:#f5f5f5;
@@ -479,4 +479,31 @@ cursor:pointer;
     color:#256b35;
     border-radius:7px;
     font-size:16px;
+}
+
+.monthly-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:center;
+    padding:10px 8px;
+    margin-bottom:5px;
+    background:#fff;
+    border-radius:8px;
+    border:1px solid #d8e0e8;
+}
+
+.monthly-date{
+    color:#555;
+}
+
+.monthly-income{
+    color:#198754;
+    font-weight:bold;
+    text-align:center;
+}
+
+.monthly-expense{
+    color:#dc3545;
+    font-weight:bold;
+    text-align:center;
 }
