@@ -6,6 +6,7 @@ const FILES_TO_CACHE = [
     "./style.css",
     "./app.js",
     "./manifest.json",
+     "./libs/IRANSans.woff2",
     "./version.json"
 ];
 
